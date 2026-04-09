@@ -5,10 +5,14 @@
   <groupId>com.example</groupId>
   <artifactId>spring-boot-trading-system</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>spring-boot-trading-system</name>
+    <packaging>pom</packaging>
+    <name>spring-boot-trading-system</name>
   <description>Spring Boot Trading System MVP</description>
+    <modules>
+        <module>spring-boot-trading-backend</module>
+    </modules>
 
-  <properties>
+    <properties>
     <java.version>17</java.version>
     <spring-boot.version>3.2.5</spring-boot.version>
     <jjwt.version>0.12.5</jjwt.version>

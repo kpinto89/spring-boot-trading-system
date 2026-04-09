@@ -1,0 +1,258 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                  TRADING SYSTEM - QUICK START GUIDE                        ║
+║                                                                            ║
+║  Complete guide to running Spring Boot backend + React TypeScript         ║
+║  frontend with PostgreSQL database and real-time order matching           ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 1: VERIFY PREREQUISITES                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Run in PowerShell to verify all requirements are installed:
+
+    java -version                    → Check Java 17+
+    node --version                   → Check Node.js 18+
+    npm --version                    → Check npm 9+
+    docker --version                 → Check Docker installed
+    docker-compose --version         → Check Docker Compose
+    mvn --version                    → Check Maven (optional)
+
+❌ Missing? Install from:
+   - Java: https://www.oracle.com/java/technologies/downloads/
+   - Node: https://nodejs.org/
+   - Docker: https://www.docker.com/products/docker-desktop
+   - Maven: https://maven.apache.org/
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 2: START DATABASE (TERMINAL 1)                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PowerShell Window 1:
+
+    cd C:\Users\t_kevinpin\IdeaProjects\spring-boot-trading-system
+    docker-compose up -d
+
+Expected output:
+    ✓ Creating trading_postgres ... done
+    ✓ Creating trading_redis ... done
+
+Wait 5 seconds for database to be ready.
+
+Verify:
+    docker ps
+
+You should see:
+    - trading_postgres  (PostgreSQL 16)
+    - trading_redis     (Redis 7)
+
+✅ DATABASE READY
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 3: START BACKEND (TERMINAL 2)                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PowerShell Window 2:
+
+    cd C:\Users\t_kevinpin\IdeaProjects\spring-boot-trading-system
+    mvn clean spring-boot:run
+
+Wait for message (takes ~15-30 seconds):
+    ✓ Started TradingApplication in X.XXX seconds
+    ✓ Tomcat started on port(s): 8080
+
+Verify in new PowerShell:
+    curl http://localhost:8080/actuator/health
+
+Should return:
+    {"status":"UP"}
+
+✅ BACKEND READY (http://localhost:8080)
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 4: START FRONTEND (TERMINAL 3)                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PowerShell Window 3:
+
+    cd C:\Users\t_kevinpin\IdeaProjects\spring-boot-trading-system\trading-ui
+    npm install
+    npm run dev
+
+Wait for:
+    ✓ VITE v5.0.8  ready in XXX ms
+    ✓ Local:   http://localhost:3000/
+
+✅ FRONTEND READY (http://localhost:3000)
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 5: OPEN APPLICATION                                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PowerShell:
+    Start-Process http://localhost:3000
+
+OR manually visit:
+    http://localhost:3000
+
+You'll see the LOGIN page.
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 6: REGISTER & TEST                                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. Click "Register here"
+2. Fill form:
+   - Full Name: Test User
+   - Email: test@example.com
+   - Password: Test@123
+   - Confirm: Test@123
+3. Click "Register"
+4. ✅ See Dashboard!
+
+On Dashboard:
+   ✓ "Place Order" form on left
+   ✓ "Market Prices" section on right
+   ✓ "Your Orders" table below
+
+Test order:
+   - Symbol: AAPL
+   - Side: BUY
+   - Type: LIMIT
+   - Price: 150.00
+   - Quantity: 10
+   - Click "Place Order"
+
+✅ Order appears in table (status: NEW)
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                        SYSTEM ARCHITECTURE                                ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │  REACT 18 + TYPESCRIPT (http://localhost:3000)              │
+    │  - Vite dev server with HMR                                 │
+    │  - Tailwind CSS dark theme                                  │
+    │  - Real-time order form                                     │
+    └─────────────────────────────────────────────────────────────┘
+                           │
+                 REST API + WebSocket
+                           │
+    ┌─────────────────────────────────────────────────────────────┐
+    │  SPRING BOOT 3.2.5 (http://localhost:8080)                  │
+    │  - JWT authentication                                       │
+    │  - Order matching engine                                    │
+    │  - WebSocket (STOMP) for real-time updates                 │
+    │  - Swagger UI: /swagger-ui.html                            │
+    └─────────────────────────────────────────────────────────────┘
+                           │
+                    ┌──────┴──────┐
+                    │             │
+    ┌──────────────────────┐  ┌───────────┐
+    │ PostgreSQL 16        │  │ Redis 7   │
+    │ localhost:5432       │  │ :6379     │
+    │ Database             │  │ Cache     │
+    └──────────────────────┘  └───────────┘
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                         COMMON COMMANDS                                   ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+DATABASE:
+    docker-compose up -d              → Start containers
+    docker-compose down               → Stop containers
+    docker ps                         → List running containers
+    docker logs trading_postgres      → View database logs
+
+BACKEND:
+    mvn clean spring-boot:run         → Start backend
+    curl http://localhost:8080/actuator/health    → Check health
+
+FRONTEND:
+    npm install                       → Install dependencies
+    npm run dev                       → Start dev server
+    npm run build                     → Build production
+    npm run type-check                → TypeScript check
+
+STOPPING:
+    Terminal 1: docker-compose down
+    Terminal 2: Ctrl+C
+    Terminal 3: Ctrl+C
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                      USEFUL URLS                                         ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+Application:
+    🌐 http://localhost:3000           → React frontend
+    🔐 Login/Register                  → Auth pages
+
+API Documentation:
+    📚 http://localhost:8080/swagger-ui.html      → Swagger UI
+    📄 http://localhost:8080/v3/api-docs          → OpenAPI JSON
+
+Health Checks:
+    💚 http://localhost:8080/actuator/health      → Backend health
+    📊 http://localhost:8080/actuator/metrics     → Metrics
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                      TROUBLESHOOTING                                      ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+❌ ERROR: "Port 3000 is already in use"
+✅ FIX: Kill Node.js process
+    Get-Process | Where-Object {$_.ProcessName -like "*node*"} | Stop-Process -Force
+
+❌ ERROR: "Port 8080 is already in use"
+✅ FIX: Find and kill process
+    netstat -ano | findstr :8080
+    taskkill /PID <PID> /F
+
+❌ ERROR: "Cannot connect to Docker daemon"
+✅ FIX: Start Docker Desktop application
+
+❌ ERROR: "npm install fails"
+✅ FIX: Clear cache and retry
+    npm cache clean --force
+    npm install --legacy-peer-deps
+
+❌ ERROR: "Login fails - 401 Unauthorized"
+✅ FIX: Token expired, logout and login again
+
+❌ ERROR: "Backend won't start - connection refused to PostgreSQL"
+✅ FIX: Ensure Docker containers are running
+    docker ps
+    docker logs trading_postgres
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                         NEXT STEPS                                        ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+1. ✅ Run following the 6 steps above
+2. ✅ Register a test account
+3. ✅ Place orders and see real-time updates
+4. ✅ Read INTEGRATION_GUIDE.md for detailed info
+5. ✅ Check Swagger UI for API documentation
+6. ✅ Explore the code in trading-ui/src/
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    YOU'RE ALL SET! 🚀                                      ║
+║                                                                            ║
+║  Follow the 6 steps above and you'll have the entire trading system       ║
+║  running in ~5 minutes!                                                   ║
+║                                                                            ║
+║  Questions? Check: HOW_TO_RUN.md, INTEGRATION_GUIDE.md, or REACT_UI_COMPLETE.md
+╚════════════════════════════════════════════════════════════════════════════╝
+
