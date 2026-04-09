@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/trading
+    username: trading
+    password: trading
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      initialization-fail-timeout: -1   # NEVER fail immediately
+      connection-timeout: 30000
+      validation-timeout: 5000
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  flyway:
+    enabled: true
+    connect-retries: 10
+    connect-retries-interval: 5s
+app:
+  jwt:
+    issuer: trading-system
+    secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_AT_LEAST_32_CHARS"
+    accessTokenMinutes: 120
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+    com.example.trading: INFO
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
