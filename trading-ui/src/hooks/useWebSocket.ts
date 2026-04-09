@@ -3,7 +3,7 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useMarketStore } from '@/stores/marketStore';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws';
+const WS_URL = import.meta.env.VITE_WS_URL || '/ws';
 
 export const useWebSocket = (symbol: string) => {
   const clientRef = useRef<Client | null>(null);
@@ -59,4 +59,3 @@ export const useWebSocket = (symbol: string) => {
 
   return clientRef.current;
 };
-

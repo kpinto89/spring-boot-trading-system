@@ -5,3 +5,5 @@
 *.swp
 .env
 /spring-boot-trading-backend/target/
+/trading-ui/package-lock.json
+/trading-ui/node_modules/

@@ -19,6 +19,7 @@ export interface MarketState {
   updatePrice: (symbol: string, price: number) => void;
   addTrade: (symbol: string, trade: TradeUpdate) => void;
   clearTrades: (symbol: string) => void;
+  resetMarket: () => void;
 }
 
 export const useMarketStore = create<MarketState>((set) => ({
@@ -49,5 +50,5 @@ export const useMarketStore = create<MarketState>((set) => ({
         [symbol]: [],
       },
     })),
+  resetMarket: () => set({ prices: {}, trades: {} }),
 }));
-
