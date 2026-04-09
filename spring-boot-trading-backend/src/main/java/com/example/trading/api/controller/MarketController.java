@@ -16,7 +16,7 @@ public class MarketController {
     private final JpaTradeRepository tradeRepository;
 
     @GetMapping("/last-price")
-    public ResponseEntity<BigDecimal> lastPrice(@RequestParam String symbol) {
+    public ResponseEntity<BigDecimal> lastPrice(@RequestParam("symbol") String symbol) {
         return ResponseEntity.ok(
                 tradeRepository.findTopBySymbolOrderByExecutedAtDesc(symbol)
                         .map(t -> t.getPrice())

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { marketService } from '@/services/market';
 import { useMarketStore } from '@/stores/marketStore';
 
 const WS_URL = import.meta.env.VITE_WS_URL || '/ws';
@@ -9,13 +10,27 @@ export const useWebSocket = (symbol: string) => {
   const clientRef = useRef<Client | null>(null);
   const updatePrice = useMarketStore((state) => state.updatePrice);
   const addTrade = useMarketStore((state) => state.addTrade);
+  const normalizedSymbol = symbol.trim().toUpperCase();
 
   useEffect(() => {
+    if (!normalizedSymbol) {
+      return;
+    }
+
+    // Seed UI with latest known price so Market Prices is not empty before websocket events.
+    marketService.lastPrice(normalizedSymbol)
+      .then((price) => {
+        updatePrice(normalizedSymbol, price);
+      })
+      .catch(() => {
+        // Keep UI functional even if initial REST lookup fails.
+      });
+
     const client = new Client({
       webSocketFactory: () => new SockJS(WS_URL),
       onConnect: () => {
         // Subscribe to price updates
-        client.subscribe(`/topic/price/${symbol}`, (message) => {
+        client.subscribe(`/topic/price/${normalizedSymbol}`, (message) => {
           try {
             const data = JSON.parse(message.body);
             updatePrice(data.symbol, data.price);
@@ -25,7 +40,7 @@ export const useWebSocket = (symbol: string) => {
         });
 
         // Subscribe to trade updates
-        client.subscribe(`/topic/trades/${symbol}`, (message) => {
+        client.subscribe(`/topic/trades/${normalizedSymbol}`, (message) => {
           try {
             const data = JSON.parse(message.body);
             addTrade(data.symbol, {
@@ -55,7 +70,7 @@ export const useWebSocket = (symbol: string) => {
         clientRef.current.deactivate();
       }
     };
-  }, [symbol, updatePrice, addTrade]);
+  }, [normalizedSymbol, updatePrice, addTrade]);
 
   return clientRef.current;
 };
