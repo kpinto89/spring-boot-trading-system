@@ -3,16 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.example</groupId>
-  <artifactId>spring-boot-trading-system</artifactId>
+  <artifactId>spring-boot-trading-backend</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>spring-boot-trading-system</name>
+  <packaging>jar</packaging>
+  <name>spring-boot-trading-backend</name>
   <description>Spring Boot Trading System MVP</description>
-    <modules>
-        <module>spring-boot-trading-backend</module>
-    </modules>
 
-    <properties>
+  <properties>
     <java.version>17</java.version>
     <spring-boot.version>3.2.5</spring-boot.version>
     <jjwt.version>0.12.5</jjwt.version>
@@ -127,10 +124,19 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.12.1</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
