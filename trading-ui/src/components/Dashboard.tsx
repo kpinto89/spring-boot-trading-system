@@ -1,17 +1,40 @@
+import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { ordersService } from '@/services/orders';
+import { marketService } from '@/services/market';
 import { useAuthStore } from '@/stores/authStore';
 import { useMarketStore } from '@/stores/marketStore';
 import { OrderForm } from './OrderForm';
 import { OrdersTable } from './OrdersTable';
+
+const SYMBOLS = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META'];
 
 export const Dashboard = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const logout = useAuthStore((state) => state.logout);
   const prices = useMarketStore((state) => state.prices);
+  const updatePrice = useMarketStore((state) => state.updatePrice);
   const resetMarket = useMarketStore((state) => state.resetMarket);
+
+  // Load all market prices on component mount
+  useEffect(() => {
+    const loadPrices = async () => {
+      for (const symbol of SYMBOLS) {
+        try {
+          const price = await marketService.lastPrice(symbol);
+          updatePrice(symbol, price);
+        } catch (error) {
+          console.error(`Failed to load price for ${symbol}:`, error);
+        }
+      }
+    };
+    loadPrices();
+    // Refresh prices every 5 seconds
+    const interval = setInterval(loadPrices, 5000);
+    return () => clearInterval(interval);
+  }, [updatePrice]);
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['orders'],

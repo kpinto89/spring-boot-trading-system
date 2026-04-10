@@ -3,6 +3,16 @@ import { useForm } from 'react-hook-form';
 import { ordersService, PlaceOrderRequest } from '@/services/orders';
 import { useWebSocket } from '@/hooks/useWebSocket';
 
+const SYMBOLS = [
+  { value: 'AAPL', label: 'AAPL - Apple Inc.' },
+  { value: 'GOOGL', label: 'GOOGL - Alphabet Inc.' },
+  { value: 'MSFT', label: 'MSFT - Microsoft Corporation' },
+  { value: 'AMZN', label: 'AMZN - Amazon.com Inc.' },
+  { value: 'TSLA', label: 'TSLA - Tesla Inc.' },
+  { value: 'NVDA', label: 'NVDA - NVIDIA Corporation' },
+  { value: 'META', label: 'META - Meta Platforms Inc.' },
+];
+
 export const OrderForm = () => {
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors }, watch } = useForm<PlaceOrderRequest>({
@@ -35,12 +45,16 @@ export const OrderForm = () => {
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-2 text-gray-300">Symbol</label>
-          <input
+          <select
             {...register('symbol', { required: 'Symbol is required' })}
-            type="text"
-            className="w-full px-4 py-2"
-            placeholder="AAPL"
-          />
+            className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded"
+          >
+            {SYMBOLS.map((symbol) => (
+              <option key={symbol.value} value={symbol.value}>
+                {symbol.label}
+              </option>
+            ))}
+          </select>
           {errors.symbol && <p className="text-red-500 text-sm mt-1">{errors.symbol.message}</p>}
         </div>
 

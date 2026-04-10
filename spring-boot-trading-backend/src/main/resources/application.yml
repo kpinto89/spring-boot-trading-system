@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/trading
+    url: jdbc:postgresql://localhost:5432/trading?serverTimezone=UTC
     username: trading
     password: trading
     driver-class-name: org.postgresql.Driver
